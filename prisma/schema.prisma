@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  nom       String?
+  prenom    String?
+  email     String   @unique
+  password  String
+  role      Role     @default(ADMIN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+}
+
+model Student {
+  id            Int      @id @default(autoincrement())
+  nom           String
+  prenom        String
+  birthDate     DateTime
+  genre         String
+  classId       Int
+  inscription   String
+  telephone     String
+  ecoleOrigine  String
+  picture       String?
+  depart        String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  class         Class    @relation(fields: [classId], references: [id])
+  payments      Payment[]
+}
+
+model Class {
+  id        Int       @id @default(autoincrement())
+  niveauScolaire  NiveauScolaire
+  niveauClasse    String    // Exemple: 1er, 2eme, etc.
+  group           String    // Exemple: A, B, etc.
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relations
+  students  Student[]
+ 
+}
+
+enum NiveauScolaire {
+  Primaire
+  College
+  Lycee
+  Formation
+}
+model Payment {
+  id          Int      @id @default(autoincrement())
+  studentId   Int
+  amount      Float
+  paymentDate DateTime 
+  frais_ins   Float
+  septembre   PaymentStatus
+  octobre     PaymentStatus
+  novembre    PaymentStatus
+  decembre    PaymentStatus
+  janvier     PaymentStatus
+  fevrier     PaymentStatus
+  mars        PaymentStatus
+  avril       PaymentStatus
+  mai         PaymentStatus
+  juin        PaymentStatus
+  juillet     PaymentStatus
+  aout        PaymentStatus
+
+
+  // Relations
+  student     Student  @relation(fields: [studentId], references: [id])
+}
+
+
+enum PaymentStatus {
+  PAID       // Payé
+  UNPAID     // Non payé
+  PENDING    // En attente
+}
